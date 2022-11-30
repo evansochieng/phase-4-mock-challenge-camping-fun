@@ -1,5 +1,5 @@
 class CampersController < ApplicationController
-rescue_from ActiveRecord::RecordInvalid, with: :handle_invalid_response
+#rescue_from ActiveRecord::RecordInvalid, with: :handle_invalid_response
 rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found_response
     def index
         campers = Camper.all
@@ -12,8 +12,10 @@ rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found_response
     end
 
     def create
-        new_camper = Camper.create(camper_params)
+        new_camper = Camper.create!(camper_params)
         render json: new_camper, status: :created
+    rescue ActiveRecord::RecordInvalid => invalid
+        render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
     end
 
     private
